@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Little Friendship Website</title>
+<style>
+:root{--wine:#65152d;--deep:#3b0a19;--cream:#fff0df;--paper:#fff8ef;--rose:#d99e9a;--ink:#57152a}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--deep);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+nav{min-height:64px;background:var(--wine);color:var(--cream);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 5%;position:sticky;top:0;z-index:10;box-shadow:0 3px 12px #20030b55}
+nav strong{font-size:20px;letter-spacing:.5px}
+nav .navbuttons{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:transparent;color:var(--cream);border:0;padding:8px;cursor:pointer;font-size:13px}
+.page{min-height:calc(100vh - 64px);display:none;align-items:center;justify-content:center;padding:28px 16px;background:radial-gradient(ellipse at top,#8a2944 0%,var(--deep) 65%)}
+.page.active{display:flex;animation:appear .4s ease}
+.paper{width:min(950px,100%);min-height:590px;background-color:var(--paper);background-image:repeating-linear-gradient(to bottom,transparent 0px,transparent 31px,#d8a6a94a 32px,transparent 33px);border-radius:8px;padding:clamp(22px,4vw,48px);position:relative;overflow:visible;box-shadow:0 18px 55px #1e020a70}
+.paper:before{content:'';position:absolute;inset:0 auto 0 42px;width:1px;background:#cf8c91a0;pointer-events:none}
+.paper:after{content:'';position:absolute;top:12px;right:30px;width:90px;height:25px;background:#d99e9a88;transform:rotate(4deg);pointer-events:none}
+.inner{position:relative;z-index:1}
+.eyebrow{text-transform:uppercase;letter-spacing:3px;font-size:12px;color:#a15a68}
+.layout{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:28px}
+h1{font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:clamp(38px,6vw,64px);line-height:1.08;margin:16px 0;color:var(--wine)}
+h2{font-size:clamp(28px,4.5vw,42px);margin:12px 0;color:var(--wine)}
+p{font-size:17px;line-height:1.8;max-width:650px}
+.btn{background:var(--wine);color:white;border:0;border-radius:40px;padding:13px 24px;font-size:15px;cursor:pointer;margin:7px 5px;transition:.2s}
+.btn:hover{transform:translateY(-2px);background:#8b2947}
+.btn.light{background:transparent;color:var(--wine);border:1px solid var(--wine)}
+.photo,.memory-video{width:100%;height:300px;object-fit:cover;border:9px solid white;box-shadow:0 8px 22px #6a23352b;transform:rotate(2deg);border-radius:5px;background:#2a1018}
+.memory-video{display:block;max-width:100%}
+.decor{font-size:25px;color:#a75d70;letter-spacing:7px}
+.sticker-row{position:absolute;inset:0;display:block;margin:0;padding:0;max-width:none;min-height:0;z-index:2;pointer-events:none}
+.dog-sticker{position:absolute;width:clamp(115px,15vw,155px);height:clamp(115px,15vw,155px);object-fit:cover;padding:5px;background:white;border:5px solid #fffdf8;outline:3px solid #d99e9a;border-radius:42% 48% 40% 46%;box-shadow:0 9px 20px #3b0a1945}
+/* Stickers sit OUTSIDE the paper edge like border decorations, not on top of text or photos. */
+.dog-sticker:nth-child(1){top:-62px;left:14%;transform:rotate(-8deg)}
+.dog-sticker:nth-child(2){bottom:-62px;left:16%;transform:rotate(7deg)}
+.dog-sticker:nth-child(3){right:-62px;top:45%;transform:rotate(8deg)}
+.paper{margin-top:42px;margin-bottom:42px}
+.paper .inner{min-height:250px}
+
+.friends-pics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px auto;max-width:700px}
+.friends-pics figure{margin:0;background:white;padding:7px 7px 13px;box-shadow:0 5px 16px #4d14201c;transform:rotate(-2deg)}
+.friends-pics figure:nth-child(2){transform:rotate(2deg)}.friends-pics figure:nth-child(3){transform:rotate(-1deg)}
+.friends-pics img,.friends-pics video{display:block;width:100%;height:145px;object-fit:cover;background:#2a1018}
+.friends-pics figcaption{text-align:center;padding-top:8px;font-size:12px;color:#8f6570}
+.polaroids{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+.polaroid{background:white;padding:8px 8px 15px;box-shadow:0 5px 16px #4d14201c;transform:rotate(-2deg)}
+.polaroid:nth-child(even){transform:rotate(2deg)}
+.polaroid img,.polaroid video{width:100%;height:145px;object-fit:cover;background:#2a1018}
+.polaroid small{display:block;text-align:center;padding-top:8px;font-style:italic}
+.note{background:#f8dfd5;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 29px,#d8a6a966 30px,transparent 31px);padding:22px;border-radius:4px;transform:rotate(-1deg);line-height:1.9;font-size:18px;box-shadow:3px 6px 0 #d99e9a55}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.gallery img,.gallery video{width:100%;height:145px;object-fit:cover;border-radius:5px;border:5px solid white;box-shadow:0 5px 12px #44202a25;background:#2a1018}
+.progress{position:absolute;bottom:12px;right:22px;font-size:12px;color:#9b6771}
+.center{text-align:center}.caption{font-size:13px;color:#8f6570}
+.footer{color:#f9e5d4;text-align:center;padding:18px;font-size:13px}
+.music-hint{font-size:12px;color:#8f6570}
+@keyframes appear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:650px){
+ nav{padding:8px 12px}nav strong{font-size:16px}nav button{font-size:11px;padding:5px}
+ .layout{grid-template-columns:1fr}.photo,.memory-video{height:230px;max-width:420px}
+ .paper{min-height:0;padding:27px 20px 48px;margin-top:35px;margin-bottom:35px}.paper:before{left:20px}
+ .friends-pics img,.friends-pics video{height:95px}.friends-pics{gap:8px}.friends-pics figure{padding:5px 5px 10px}
+ .polaroids{gap:8px}.polaroid img,.polaroid video{height:100px}.gallery{gap:7px}.gallery img,.gallery video{height:100px}
+ .dog-sticker{width:clamp(82px,23vw,105px);height:clamp(82px,23vw,105px);padding:4px;border-width:4px}
+ .dog-sticker:nth-child(1){top:-43px;left:8%}
+ .dog-sticker:nth-child(2){bottom:-43px;left:8%}
+ .dog-sticker:nth-child(3){right:-30px;top:42%}
+ .paper{padding-top:30px;padding-bottom:42px}
+ .page{padding-left:12px;padding-right:22px}
+
+}
+</style>
+</head>
+<body>
+<audio id="friendSong" src="song.mp3" autoplay loop preload="auto"></audio>
+<nav>
+<strong>♡ Our Story</strong>
+<div class="navbuttons">
+<button onclick="go(0)">Home</button><button onclick="go(4)">Gallery</button><button onclick="go(10)">Finish</button>
+</div>
+</nav>
+
+<!-- Dog sticker photos decorate the paper borders. Memory image slots are autoplaying videos. -->
+<section class="page active"><div class="paper"><div class="inner">
+<div class="sticker-row">
+<img class="dog-sticker" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=250&q=85" alt="Dog sticker">
+<img class="dog-sticker" src="https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=250&q=85" alt="Dog sticker">
+<img class="dog-sticker" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=250&q=85" alt="Golden retriever sticker">
+</div>
+<div class="layout"><div><div class="eyebrow">A little friendship corner</div><h1>Friends &amp; Fun<br>A little friendship website</h1><p>Not homework. Not a serious announcement. Just a tiny corner for friendship, random jokes, silly moments, and the kind of memories that make ordinary days better.</p><div class="decor">— ✦ ♡ ✦ —</div><button class="btn" onclick="go(1)">Click Here →</button></div>
+<video class="memory-video" src="videos/1.mp4" autoplay muted loop playsinline controls aria-label="Friends enjoying a moment"></video></div>
+</div><div class="progress">01 / 11</div></div></section>
+
+<section class="page"><div class="paper center"><div class="inner">
+<div class="sticker-row">
+<img class="dog-sticker" src="https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=300&q=90" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=300&q=90" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=90" alt="Dog sticker">
+</div><div class="eyebrow">Secret entry</div><h1>Friendship Lock 🔐</h1><p>Enter the secret password to open the next page.</p><form onsubmit="return unlockPage(event)" style="margin:22px auto;max-width:360px"><input id="secretPassword" type="password" placeholder="Enter password" autocomplete="off" required style="width:100%;padding:14px 16px;border:2px solid #d99e9a;border-radius:12px;background:#fffdf8;font-size:17px;color:#57152a"><button class="btn" type="submit">Unlock →</button></form><p id="passwordMessage" role="status" aria-live="polite"></p><div class="decor">✦ ───── ♡ ───── ✦</div>
+</div><div class="progress">02 / 11</div></div></section>
+
+<section class="page"><div class="paper"><div class="inner">
+<div class="sticker-row"><img class="dog-sticker" src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1546975490-e8b92a360b24?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"></div>
+<div class="center"><div class="eyebrow">The unexpected part</div><h2>Friendships happen randomly...</h2><p style="margin-left:auto;margin-right:auto">Sometimes friendship starts with one random conversation and turns into endless jokes, unexpected adventures, and memories worth keeping. No planning required 😂</p></div>
+<div class="friends-pics">
+<figure><video class="memory-video" src="videos/2.mp4" autoplay muted loop playsinline controls aria-label="Friends together"></video><figcaption>Unexpected beginnings</figcaption></figure>
+<figure><video class="memory-video" src="videos/3.mp4" autoplay muted loop playsinline controls aria-label="Friends laughing"></video><figcaption>Good energy</figcaption></figure>
+<figure><video class="memory-video" src="videos/4.mp4" autoplay muted loop playsinline controls aria-label="Friends having fun"></video><figcaption>Random memories</figcaption></figure>
+</div><div class="center"><button class="btn" onclick="go(3)">Keep going →</button></div>
+</div><div class="progress">03 / 11</div></div></section>
+
+<section class="page"><div class="paper"><div class="inner">
+<div class="sticker-row"><img class="dog-sticker" src="https://images.unsplash.com/photo-1546975490-e8b92a360b24?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"></div>
+<div class="eyebrow">Little things, big memories</div><h2>Friendship Moments</h2><p>Random days, funny faces, silly plans, and the moments that become favourite memories 😂</p>
+<div class="polaroids"><div class="polaroid"><video class="memory-video" src="videos/5.mp4" autoplay muted loop playsinline controls aria-label="Friends"></video><small>Random days</small></div><div class="polaroid"><video class="memory-video" src="videos/6.mp4" autoplay muted loop playsinline controls aria-label="Friends"></video><small>Good company</small></div><div class="polaroid"><video class="memory-video" src="videos/7.mp4" autoplay muted loop playsinline controls aria-label="Friends"></video><small>Keep these days</small></div></div>
+<button class="btn" onclick="go(4)">Video Gallery →</button>
+</div><div class="progress">04 / 11</div></div></section>
+
+<section class="page"><div class="paper"><div class="inner">
+<div class="sticker-row"><img class="dog-sticker" src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"></div>
+<div class="eyebrow">Snapshots</div><h2>Video Gallery</h2><p>A little collection of friendship, fun, random adventures, and memorable moments.</p>
+<div class="gallery"><video class="memory-video" src="videos/8.mp4" autoplay muted loop playsinline controls aria-label="Friends"></video><video class="memory-video" src="videos/9.mp4" autoplay muted loop playsinline controls aria-label="Friends celebrating"></video><video class="memory-video" src="videos/10.mp4" autoplay muted loop playsinline controls aria-label="Friends outside"></video><video class="memory-video" src="videos/12.mp4" autoplay muted loop playsinline controls aria-label="Friends together"></video><video class="memory-video" src="videos/13.mp4" autoplay muted loop playsinline controls aria-label="Friends having fun"></video><video class="memory-video" src="videos/14.mp4" autoplay muted loop playsinline controls aria-label="Friends sharing a meal"></video></div>
+<p class="caption">Add the friendship clips inside the videos folder. Each clip repeats automatically while its page is open.</p><button class="btn" onclick="go(5)">Next →</button>
+</div><div class="progress">05 / 11</div></div></section>
+
+<section class="page"><div class="paper"><div class="inner">
+<div class="sticker-row"><img class="dog-sticker" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"></div>
+<div class="center"><div class="eyebrow">A few more memories</div><h2>Proof of Good Times</h2><p style="margin-left:auto;margin-right:auto">The plan was to be normal. The memories had other ideas 😂</p></div>
+<div class="friends-pics"><figure><video class="memory-video" src="videos/15.mp4" autoplay muted loop playsinline controls aria-label="Friends sharing a meal"></video><figcaption>Food first</figcaption></figure><figure><video class="memory-video" src="videos/16.mp4" autoplay muted loop playsinline controls aria-label="Friends celebrating"></video><figcaption>Zero plans</figcaption></figure><figure><video class="memory-video" src="videos/1.mp4" autoplay muted loop playsinline controls aria-label="Friends together"></video><figcaption>Full nonsense</figcaption></figure></div>
+<div class="center"><button class="btn" onclick="go(6)">Next →</button></div>
+</div><div class="progress">06 / 11</div></div></section>
+
+<section class="page"><div class="paper"><div class="inner">
+<div class="sticker-row"><img class="dog-sticker" src="https://images.unsplash.com/photo-1546975490-e8b92a360b24?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"></div>
+<div class="layout"><div><div class="eyebrow">The little things</div><h2>What makes friendship special</h2><p>Random jokes, honest conversations, unexpected plans, and laughing at absolutely nothing can make ordinary days unforgettable.</p><p>Good friends bring comfort, chaos, and a perfect amount of nonsense 😂</p><button class="btn" onclick="go(7)">Next →</button></div><div class="note">“Good friends make ordinary moments feel special.”<br><br><span class="caption">— A little friendship reminder</span></div></div>
+</div><div class="progress">07 / 11</div></div></section>
+
+<section class="page"><div class="paper"><div class="inner">
+<div class="sticker-row"><img class="dog-sticker" src="https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"></div>
+<div class="center"><div class="eyebrow">Three snapshots, one good friendship</div><h2>Little Things That Matter</h2><p>Friendship is not about huge gestures. It is about little conversations, random jokes, showing up, and being real.</p></div>
+<div class="friends-pics"><figure><video class="memory-video" src="videos/2.mp4" autoplay muted loop playsinline controls aria-label="Friends laughing"></video><figcaption>The laughs</figcaption></figure><figure><video class="memory-video" src="videos/3.mp4" autoplay muted loop playsinline controls aria-label="Friends together"></video><figcaption>The company</figcaption></figure><figure><video class="memory-video" src="videos/4.mp4" autoplay muted loop playsinline controls aria-label="Friends having fun"></video><figcaption>The memories</figcaption></figure></div>
+<div class="center"><button class="btn" onclick="go(8)">Keep going →</button></div>
+</div><div class="progress">08 / 11</div></div></section>
+
+<section class="page"><div class="paper"><div class="inner">
+<div class="sticker-row"><img class="dog-sticker" src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"></div>
+<div class="layout"><div><div class="eyebrow">A small note</div><h2>Keep the friendship vibes</h2><p>May friendship bring more happy days, more reasons to laugh, and fewer people testing everyone’s patience.</p><p>And when life gets too serious, a random joke and a good friend can help 😂</p><button class="btn" onclick="go(9)">One more page →</button></div>
+<div class="polaroids"><div class="polaroid"><video class="memory-video" src="videos/5.mp4" autoplay muted loop playsinline controls aria-label="Friends"></video><small>Good people</small></div><div class="polaroid"><video class="memory-video" src="videos/6.mp4" autoplay muted loop playsinline controls aria-label="Friends"></video><small>Good days</small></div><div class="polaroid"><video class="memory-video" src="videos/7.mp4" autoplay muted loop playsinline controls aria-label="Friends"></video><small>Good memories</small></div></div></div>
+</div><div class="progress">09 / 11</div></div></section>
+
+<section class="page"><div class="paper center"><div class="inner">
+<div class="sticker-row"><img class="dog-sticker" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"></div>
+<div class="eyebrow">Final reminder</div><h1>Friendship unlocked.</h1><p>Unexpected friendship. Unplanned chaos. Excellent plot development.</p><div class="note">“The best friendships sometimes begin with the most unexpected hello.”</div><p>More laughter, more memories, and more good times ahead.</p><button class="btn" onclick="go(10)">Final page →</button>
+</div><div class="progress">10 / 11</div></div></section>
+
+<section class="page"><div class="paper center"><div class="inner">
+<div class="sticker-row"><img class="dog-sticker" src="https://images.unsplash.com/photo-1546975490-e8b92a360b24?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"><img class="dog-sticker" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=250&q=85" alt="Dog sticker"></div>
+<div class="decor">✦ ✦ ✦</div><div class="eyebrow">A friendship reminder</div><h1>Stay Happy.<br>Stay Awesome.</h1><p>Keep smiling, keep laughing, and never lose that fun side. Life is better with kind people and a little harmless chaos.</p><p>Good friends. Random laughs. Memories worth keeping.</p><button class="btn" onclick="go(0)">Start again ↻</button>
+</div><div class="progress">11 / 11</div></div></section>
+
+<div class="footer">Made with care and a questionable amount of effort · A Little Friendship Website</div>
+<script>
+let current=0;
+let passwordUnlocked=false;
+const pages=[...document.querySelectorAll('.page')];
+const song=document.getElementById('friendSong');
+function tryMusic(){if(song){song.loop=true;song.play().catch(()=>{});}}
+function playVisibleVideos(){
+ document.querySelectorAll('.page video.memory-video').forEach(video=>{
+   const visible=video.closest('.page')?.classList.contains('active');
+   if(visible){video.muted=true;video.loop=true;video.autoplay=true;video.playsInline=true;video.play().catch(()=>{});}
+   else video.pause();
+ });
+}
+window.addEventListener('load',()=>{tryMusic();playVisibleVideos();});
+document.addEventListener('pointerdown',()=>{tryMusic();playVisibleVideos();},{once:true});
+document.addEventListener('keydown',()=>{tryMusic();playVisibleVideos();},{once:true});
+function unlockPage(event){
+ event.preventDefault();
+ const input=document.getElementById('secretPassword');
+ const message=document.getElementById('passwordMessage');
+ if(input.value.trim().toLowerCase()==='himii'){
+   passwordUnlocked=true; message.textContent='Correct password! Opening next page… 💗'; message.style.color='#267342';
+   current=1; pages[1].classList.remove('active'); pages[2].classList.add('active'); current=2; window.scrollTo({top:0,behavior:'smooth'}); tryMusic(); playVisibleVideos();
+ }else{
+   message.textContent='Wrong password ra 😅 Try again.'; message.style.color='#b00020'; input.value=''; input.focus();
+ }
+ return false;
+}
+function go(n){
+ if(n>=2 && !passwordUnlocked){current=1;pages.forEach((page,index)=>page.classList.toggle('active',index===1));window.scrollTo({top:0,behavior:'smooth'});return;}
+ pages[current].classList.remove('active');current=n;pages[current].classList.add('active');window.scrollTo({top:0,behavior:'smooth'});tryMusic();playVisibleVideos();
+}
+</script>
+</body>
+</html>
